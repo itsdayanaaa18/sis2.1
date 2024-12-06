@@ -1,0 +1,69 @@
+package com.company;
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Начало ");
+
+        ExamChecking m = new ExamChecking(6);
+        ExamChecking m2 = new ExamChecking(4);
+
+        m.setName("Алибек");
+        m2.setName("Дана");
+
+        m2.setPriority(Thread.MAX_PRIORITY);
+
+        m.start();
+        m2.start();
+
+        try {
+            m.join();
+            m2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Все завершили работу. экзаменационных листов: " + ExamChecking.getExamSheets());
+    }
+}
+
+
+11111111111111111111111111111111111111111
+
+package com.company;
+
+public class ExamChecking extends Thread {
+    private static int examSheets = 500;
+    private int maxChecks;
+
+    public ExamChecking(int maxChecks) {
+        this.maxChecks = maxChecks;
+    }
+
+    @Override
+    public void run() {
+        System.out.println(getName() + " начал работу.");
+        while (maxChecks > 0) {
+            synchronized (ExamChecking.class) {
+                if (examSheets <= 0) {
+                    System.out.println("листа не осталось!  проверены!");
+                    System.exit(0);
+                }
+                examSheets -= 50;
+                maxChecks--;
+                System.out.println(getName() + " закончила проверку в: " + new java.util.Date() + ",  экзаменационных листов теперь составляет " + examSheets);
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(getName() + " завершила свою работу.");
+    }
+
+    public static int getExamSheets() {
+        return examSheets;
+    }
+}
+
+
